@@ -73,6 +73,14 @@ on:
         options:
           - 'true'
           - 'false'
+      rekernel_enable:
+        description: '是否启用Re-Kernel支持(用于与Freezer,NoActive等软件配合使用,提升冻结后台能力)'
+        required: true
+        type: choice
+        default: 'false'
+        options:
+          - 'true'
+          - 'false'
       scx_enable:
         description: '是否安装风驰内核驱动(未完成)'
         required: true
@@ -424,6 +432,14 @@ jobs:
             echo "CONFIG_MQ_IOSCHED_SSG_CGROUP=y" >> ./common/arch/arm64/configs/gki_defconfig
           fi
 
+      - name: 启用Re-Kernel支持
+        run: |
+          if [[ "${{ github.event.inputs.rekernel_enable }}" == "true" ]]; then
+            echo "正在启用Re-Kernel支持…"
+            cd kernel_workspace
+            echo "CONFIG_REKERNEL=y" >> ./common/arch/arm64/configs/gki_defconfig
+          fi
+
       - name: 添加制作名称
         run: |
           cd kernel_workspace
@@ -567,6 +583,7 @@ jobs:
             - 网络功能增强：${{ github.event.inputs.better_net }}
             - BBR/Brutal 等拥塞控制算法支持：${{ github.event.inputs.bbr_enable }}
             - 三星SSG IO调度器支持：${{ github.event.inputs.ssg_enable }}
+            - Re-Kernel支持：${{ github.event.inputs.rekernel_enable }}
             - 风驰内核支持：${{ github.event.inputs.scx_enable }}
             - 推荐系统：ColorOS 14 / RealmeUI 5.0
             - SukiSU管理器下载：[SukiSU-Ultra](https://github.com/ShirkNeko/SukiSU-Ultra/releases)
